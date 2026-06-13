@@ -166,7 +166,7 @@ def _config_mde_module_dsc(context: datatype.Contexts):
     with open(dsc_path, "w", encoding='utf-8') as dsc_file:
         dsc_file.writelines(new_dsc_file)
 
-install_tasks: list[datatype.Function] = [
+install_tasks: list[datatype.FunctionTask] = [
     {
         "Message": "bashrc 환경 활성화 함수 추가",
         "Func": _add_bashrc_func
