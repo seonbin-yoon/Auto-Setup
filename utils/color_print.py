@@ -1,4 +1,3 @@
-import os
 import platform
 import sys
 from typing import Any
@@ -37,9 +36,9 @@ class Config:
 
 def clear_screen():
     if platform.system() == "Windows":
-        os.system("cls") # type: ignore
+        write("\033[2J\033[3J\033[H")
     elif platform.system() == "Linux":
-        os.system("clear") # type: ignore
+        write("\033[2J\033[3J\033[H")
     else:
         raise NotImplementedError("화면 초기화를 진행하지 못했습니다.")
 
