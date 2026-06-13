@@ -10,13 +10,19 @@ from utils.color_print import Color
 def install(program_context: datatype.Contexts) -> bool:
     try:
         _wake(program_context.config)
-    except (SettingError.InvalidSettingError, QemuExcept.QemuExistsError)\
-            as error_message:
+    except (
+        SettingError.InvalidSettingError,
+        QemuExcept.QemuExistsError,
+        RunExcept.SudoError) as error_message:
+
         color_print.write(error_message, Color.RED)
         return False
 
     shell_tasks = _get_shell_tasks(program_context)
     func_tasks = all_func.install_tasks
+
+    execute.processing_tasks(shell_tasks, program_context)
+
     task_contexts = datatype.TaskContexts(
         shell_task_num=len(shell_tasks),
         func_task_num=len(func_tasks),
@@ -50,12 +56,20 @@ def _wake(config: datatype.Config):
         f"{error_message}") from error_message
     color_print.write("\r설정 파일 내용 검사 -> 통과", Color.GREEN)
 
+    color_print.write("시작하기에 앞서, sudo 인증이 필요합니다.", Color.YELLOW)
+    try:
+        execute.require_sudo()
+    except RunExcept.SudoError as error_message:
+        raise RunExcept.SudoError(error_message) from error_message
+    color_print.write("sudo 인증 성공", Color.GREEN)
+
 def _get_shell_tasks(program_context: datatype.Contexts) -> list[datatype.ShellTask]:
     if program_context.distro == "RHEL":
         from python_data.qemu.RHEL import rhel
         task = rhel.install_tasks
     elif program_context.distro == "DEBIAN":
-        raise NotImplementedError
+        from python_data.qemu.DEBIAN import debian
+        task = debian.install_tasks
     else:
         raise NotImplementedError
 

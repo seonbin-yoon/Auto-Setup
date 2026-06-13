@@ -8,10 +8,7 @@ package_install: datatype.ShellTask = {
         "dnf",
         "install",
         "-y",
-        "qemu-kvm",
-        "libvirt",
-        "virt-install",
-        "virt-manager"
+        "qemu-system-x86"
         ]
 }
 

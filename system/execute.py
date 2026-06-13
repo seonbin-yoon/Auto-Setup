@@ -56,3 +56,26 @@ def func_run(
             f"{task_contents.total_num}] "\
             f"{func_task['Message']} -> 완료.{"":<5}",
             Color.GREEN)
+
+def processing_tasks(
+        raw_tasks: list[datatype.ShellTask],
+        program_context: datatype.Contexts):
+
+    for task in raw_tasks:
+        if "!Home" in task["Path"]:
+            task["Path"] = task["Path"].replace("!Home", program_context.home)
+        if "!Edkpath" in task["Path"]:
+            task["Path"] = task["Path"].replace(
+                "!Edkpath", program_context.config["edk2_path"]
+                )
+
+        for num, _exec in enumerate(task["Exec"]):
+            if "!Edkpath" in _exec:
+                _exec = _exec.replace("!Edkpath", program_context.config["edk2_path"])
+                task["Exec"][num] = _exec
+
+def require_sudo():
+    try:
+        subprocess.run(["sudo", "-v"], check=True)
+    except subprocess.CalledProcessError as error:
+        raise RunExcept.SudoError("sudo 인증 실패") from error

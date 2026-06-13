@@ -10,9 +10,11 @@ from utils.color_print import Color
 
 def install(program_context: datatype.Contexts) -> bool:
     start_time = datetime.datetime.now()
+
     try:
         _wake(program_context.config)
-    except (Edk2Except.Edk2ExistsError, Edk2Except.NotDockerError) as error_message:
+    except (Edk2Except.Edk2ExistsError, Edk2Except.NotDockerError, RunExcept.SudoError)\
+            as error_message:
         color_print.write(error_message, Color.RED)
         return False
 
@@ -21,7 +23,7 @@ def install(program_context: datatype.Contexts) -> bool:
     func_tasks = _get_func_task_lists()
     shell_tasks = _get_shell_task_lists(program_context.distro)
 
-    _processing_tasks(shell_tasks, program_context)
+    execute.processing_tasks(shell_tasks, program_context)
 
     task_contexts = datatype.TaskContexts(
         func_task_num=len(func_tasks),
@@ -75,6 +77,13 @@ def _wake(config: datatype.Config):
         raise SettingError.InvalidSettingError(error_message) from error_message
     color_print.write("\r설정 파일 내용 검사 -> 통과", Color.GREEN)
 
+    color_print.write("시작하기에 앞서, sudo 인증이 필요합니다.", Color.YELLOW)
+    try:
+        execute.require_sudo()
+    except RunExcept.SudoError as error_message:
+        raise RunExcept.SudoError(error_message) from error_message
+    color_print.write("sudo 인증 성공", Color.GREEN)
+
 def __check_is_docker():
     if os.path.exists('/.dockerenv'):
         return
@@ -103,20 +112,3 @@ def _get_shell_task_lists(distro: str) -> list[datatype.ShellTask]:
 
 def _get_func_task_lists() -> list[datatype.FunctionTask]:
     return all_func.install_tasks
-
-def _processing_tasks(
-        raw_tasks: list[datatype.ShellTask],
-        program_context: datatype.Contexts):
-
-    for task in raw_tasks:
-        if "!Home" in task["Path"]:
-            task["Path"] = task["Path"].replace("!Home", program_context.home)
-        if "!Edkpath" in task["Path"]:
-            task["Path"] = task["Path"].replace(
-                "!Edkpath", program_context.config["edk2_path"]
-                )
-
-        for num, _exec in enumerate(task["Exec"]):
-            if "!Edkpath" in _exec:
-                _exec = _exec.replace("!Edkpath", program_context.config["edk2_path"])
-                task["Exec"][num] = _exec

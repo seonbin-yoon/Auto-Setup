@@ -25,7 +25,7 @@ git_init: datatype.ShellTask = {
         }
 
 make: datatype.ShellTask = {
-            "Message": "BaseTools make 하기",
+            "Message": "빌드 툴 컴파일 하기",
             "Exec": ["make", "-C", "BaseTools"],
             "Path": "!Edkpath/edk2",
         }
@@ -38,7 +38,7 @@ edksetup_sh: datatype.ShellTask = {
         }
 
 make2: datatype.ShellTask = {
-            "Message": "BaseTools make 하기 x2",
+            "Message": "빌드 툴 컴파일 하기 x2",
             "Exec": ["make", "-C", "BaseTools"],
             "Path": "!Edkpath/edk2",
         }

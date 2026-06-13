@@ -15,8 +15,10 @@ package_upgrade: datatype.ShellTask = {
     "Path": "!Home",
     "Exec": [
         "sudo",
+        "DEBIAN_FRONTEND=noninteractive",
         "apt",
-        "upgrade"
+        "upgrade",
+        "-y"
     ]
 }
 

@@ -64,7 +64,7 @@ __MAPPING: list[datatype.ShellCommand] = [
     },
     {
         "Argu": True,
-        "Command": ("qe",),
+        "Command": ("iq",),
         "Exec": qemu.install
     },
     {
@@ -91,7 +91,7 @@ __MAPPING: list[datatype.ShellCommand] = [
 
 __COMMANDS = (
     "ie    : edk2 설치\n"
-    "qe    : qemu 설치\n"
+    "iq    : qemu 설치\n"
     "-------------------------\n"
     "help  : 명령어 목록 보기\n"
     "clear : 화면 초기화\n"
