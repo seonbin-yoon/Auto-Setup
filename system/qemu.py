@@ -3,25 +3,30 @@ import os
 from python_data.qemu import all_func
 from system import execute
 from utils import check, color_print, datatype
+from utils._except import QemuExcept, RunExcept, SettingError
 from utils.color_print import Color
 
 
 def install(program_context: datatype.Contexts) -> bool:
     try:
         _wake(program_context.config)
-    except (NotImplementedError, FileExistsError) as error_message:
+    except (SettingError.InvalidSettingError, QemuExcept.QemuExistsError)\
+            as error_message:
         color_print.write(error_message, Color.RED)
         return False
 
-    func_task = all_func.install_tasks
+    shell_tasks = _get_shell_tasks(program_context)
+    func_tasks = all_func.install_tasks
     task_contexts = datatype.TaskContexts(
-        len(func_task),
-        0,
-        len(func_task)
+        shell_task_num=len(shell_tasks),
+        func_task_num=len(func_tasks),
+        total_num=len(shell_tasks) + len(func_tasks)
     )
+
     try:
-        execute.func_run(func_task, task_contexts, program_context)
-    except RuntimeError as error_message:
+        execute.shell_run(shell_tasks, task_contexts)
+        execute.func_run(func_tasks, task_contexts, program_context)
+    except RunExcept.FailedRunError as error_message:
         color_print.write(error_message, Color.RED)
         return False
 
@@ -33,14 +38,25 @@ def _wake(config: datatype.Config):
 
     color_print.write("\r미설치 여부 검사 -> ...", Color.YELLOW, end="")
     if os.path.exists(config["qemu_path"]):
-        raise FileExistsError("\r설치 여부 검사 -> 실패\n" \
+        raise QemuExcept.QemuExistsError("\r설치 여부 검사 -> 실패\n" \
             "이미 qemu 폴더가 존재하므로 더 이상 진행할 수 없습니다.")
     color_print.write("\r미설치 여부 검사 -> 통과", Color.GREEN)
 
     color_print.write("\r설정 파일 내용 검사 -> ...", Color.YELLOW, end="")
     try:
         check.qemu_config(config)
-    except NotImplementedError as error_message:
-        raise NotImplementedError("\r설정 파일 내용 검사 -> 실패\n" \
+    except SettingError.InvalidSettingError as error_message:
+        raise SettingError.InvalidSettingError("\r설정 파일 내용 검사 -> 실패\n" \
         f"{error_message}") from error_message
     color_print.write("\r설정 파일 내용 검사 -> 통과", Color.GREEN)
+
+def _get_shell_tasks(program_context: datatype.Contexts) -> list[datatype.ShellTask]:
+    if program_context.distro == "RHEL":
+        from python_data.qemu.RHEL import rhel
+        task = rhel.install_tasks
+    elif program_context.distro == "DEBIAN":
+        raise NotImplementedError
+    else:
+        raise NotImplementedError
+
+    return task
