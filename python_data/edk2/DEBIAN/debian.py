@@ -35,7 +35,7 @@ package_install: datatype.ShellTask = {
         "iasl",
         "git",
         "nasm",
-        "python3"
+        "python-is-python3"
         ]
 }
 
