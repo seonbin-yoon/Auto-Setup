@@ -26,6 +26,10 @@ class RunExcept:
         """Sudo 인증 실패함"""
         pass
 
+    class CancelError(Exception):
+        """사용자가 작업을 취소함"""
+        pass
+
 class SettingError:
     """설정값과 관련된 모든 에러"""
     class InvalidSettingError(Exception):

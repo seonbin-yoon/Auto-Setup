@@ -105,7 +105,7 @@ __COMMANDS = (
 def main():
     processing_config(contexts.config)
     color_print.clear_screen()
-    color_print.write("Auto-Setup에 오신 것을 환영합니다!", Color.MAGENTA)
+    color_print.write("자동 설치 프로그램에 오신 것을 환영합니다!", Color.MAGENTA)
     show_message()
 
     while True:

@@ -57,22 +57,25 @@ def func_run(
             f"{func_task['Message']} -> 완료.{"":<5}",
             Color.GREEN)
 
-def processing_tasks(
+def env_var_substitution(
         raw_tasks: list[datatype.ShellTask],
-        program_context: datatype.Contexts):
+        need_sudo: bool,
+        program_context: datatype.Contexts) -> None:
 
-    for task in raw_tasks:
-        if "!Home" in task["Path"]:
-            task["Path"] = task["Path"].replace("!Home", program_context.home)
-        if "!Edkpath" in task["Path"]:
-            task["Path"] = task["Path"].replace(
-                "!Edkpath", program_context.config["edk2_path"]
-                )
-
-        for num, _exec in enumerate(task["Exec"]):
-            if "!Edkpath" in _exec:
-                _exec = _exec.replace("!Edkpath", program_context.config["edk2_path"])
-                task["Exec"][num] = _exec
+    raw_tasks[:] = [
+        {
+            **task,
+            "Path": task["Path"]
+                .replace("!Home", program_context.home)
+                .replace("!Edkpath", program_context.config["edk2_path"]),
+            "Exec": [
+                _exec.replace("!Edkpath", program_context.config["edk2_path"])
+                for _exec in task["Exec"]
+                if need_sudo or _exec != "sudo"
+            ]
+        }
+        for task in raw_tasks
+    ]
 
 def require_sudo():
     try:
