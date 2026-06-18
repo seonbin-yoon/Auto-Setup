@@ -6,7 +6,8 @@ from system import execute
 from utils import check, color_print, datatype
 from utils._except import QemuExcept, RunExcept, SettingError
 from utils.color_print import Color
-from utils.functions import check_need_sudo, get_spend_time
+from utils.functions import get_spend_time
+from utils.system import check_need_sudo
 
 
 def install(program_context: datatype.Contexts) -> bool:
