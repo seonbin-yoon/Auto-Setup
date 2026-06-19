@@ -24,7 +24,7 @@ def get_distro() -> str:
     os_distro_id = distro.id()
 
     for keys, value in __DISTRO.items():
-        if os_distro_id.lower() in keys:
+        if os_distro_id in keys:
             return value
     raise InitError.UnsupportedOSError(os_distro_id)
 
