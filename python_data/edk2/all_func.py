@@ -2,7 +2,7 @@ import os
 import shutil
 import uuid
 
-from utils import datatype
+from modules import datatype
 
 
 def _add_bashrc_func(context: datatype.Contexts):

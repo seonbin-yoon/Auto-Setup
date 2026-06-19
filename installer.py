@@ -3,15 +3,15 @@ import os
 import sys
 from typing import cast
 
+from modules import console, datatype, system
+from modules._except import InitError
+from modules.console import Color
+from modules.system import program_exit
 from system import edk2, qemu
-from utils import color_print, datatype, system
-from utils._except import InitError
-from utils.color_print import Color
-from utils.functions import program_exit
 
 
 def show_message():
-    color_print.write(__COMMANDS, Color.YELLOW, end="\n\n")
+    console.write(__COMMANDS, Color.YELLOW, end="\n\n")
 
 def get_config() -> datatype.Config:
     config = configparser.ConfigParser()
@@ -33,17 +33,17 @@ def processing_config(config: datatype.Config):
     if config["max_concurrent_thread_number"]:
         threads = system.get_threads()
         if threads is None:
-            color_print.write("논리 쓰레드 갯수를 알 수 없습니다.\n" \
+            console.write("논리 쓰레드 갯수를 알 수 없습니다.\n" \
             "1로 사용합니다.", Color.RED)
             threads = 0
         config["max_concurrent_thread_number"] = (threads * 2) + 1
 
 def check_done(result: bool):
     if result:
-        color_print.write(
+        console.write(
             "모든 변경 사항이 잘 반영되게 재로그인을 권장합니다!", Color.YELLOW
             )
-        color_print.write("작업을 성공적으로 완료 했습니다.", Color.BLUE)
+        console.write("작업을 성공적으로 완료 했습니다.", Color.BLUE)
 
 try:
     program_contexts = datatype.Contexts(
@@ -80,7 +80,7 @@ __MAPPING: list[datatype.ShellCommand] = [
     {
         "Argu": False,
         "Command":("clear", "cls"),
-        "Exec": color_print.clear_screen,
+        "Exec": console.clear_screen,
     },
     {
         "Argu": False,
@@ -90,7 +90,7 @@ __MAPPING: list[datatype.ShellCommand] = [
     {
         "Argu": False,
         "Command": ("color",),
-        "Exec": color_print.config.toogle_color_mode
+        "Exec": console.config.toogle_color_mode
     }
 ]
 
@@ -106,12 +106,12 @@ __COMMANDS = (
 
 def main():
     processing_config(program_contexts.config)
-    color_print.clear_screen()
-    color_print.write("자동 설치 프로그램에 오신 것을 환영합니다!", Color.MAGENTA)
+    console.clear_screen()
+    console.write("자동 설치 프로그램에 오신 것을 환영합니다!", Color.MAGENTA)
     show_message()
 
     while True:
-        _input = color_print.read("메뉴 입력 > ")
+        _input = console.read("메뉴 입력 > ")
         if not _input:
             continue
 
@@ -123,11 +123,11 @@ def main():
                     mapping["Exec"]()
                 break
         else:
-            color_print.write("없는 기능을 지정했습니다..", Color.RED)
+            console.write("없는 기능을 지정했습니다..", Color.RED)
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        color_print.clear_screen()
+        console.clear_screen()
         program_exit(130)

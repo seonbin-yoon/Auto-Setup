@@ -6,9 +6,9 @@ from typing import Any, NoReturn
 import distro
 import psutil
 
-from utils import color_print
-from utils._except import InitError
-from utils.color_print import Color
+from modules import console
+from modules._except import InitError
+from modules.console import Color
 
 __DISTRO: dict[tuple[str, ...], str] = {
     ("fedora", "rhel"): "RHEL",
@@ -48,5 +48,5 @@ def program_exit(exit_code: int = 0, message: Any = "", color: str = Color.RESET
     -> NoReturn:
 
     if message:
-        color_print.write(message, color)
+        console.write(message, color)
     sys.exit(exit_code)

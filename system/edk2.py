@@ -1,18 +1,18 @@
 import datetime
 import os
 
+from modules import check, console, datatype
+from modules._except import Edk2Except, RunExcept, SettingError
+from modules.console import Color
+from modules.functions import get_spend_time
+from modules.system import check_need_sudo
 from python_data.edk2 import all_func, all_shell
 from system import execute
-from utils import check, color_print, datatype
-from utils._except import Edk2Except, RunExcept, SettingError
-from utils.color_print import Color
-from utils.functions import get_spend_time
-from utils.system import check_need_sudo
 
 
 def install(program_context: datatype.Contexts) -> bool:
-    color_print.clear_screen()
-    color_print.write("edk2 셋팅을 시작합니다..", Color.YELLOW)
+    console.clear_screen()
+    console.write("edk2 셋팅을 시작합니다..", Color.YELLOW)
     start_time = datetime.datetime.now()
 
     try:
@@ -35,10 +35,10 @@ def install(program_context: datatype.Contexts) -> bool:
             except RunExcept.CancelError:
                 return False
 
-        color_print.write(error, Color.RED)
+        console.write(error, Color.RED)
         return False
 
-    color_print.write("이 작업은 시간이 조금 걸릴 수 있습니다..", Color.MAGENTA)
+    console.write("이 작업은 시간이 조금 걸릴 수 있습니다..", Color.MAGENTA)
 
     func_tasks = _get_func_task_lists()
     shell_tasks = _get_shell_task_lists(program_context.distro)
@@ -55,26 +55,26 @@ def install(program_context: datatype.Contexts) -> bool:
         execute.shell_run(shell_tasks, task_contexts)
         execute.func_run(func_tasks, task_contexts, program_context)
     except RunExcept.FailedRunError as error:
-        color_print.write(error, Color.RED)
+        console.write(error, Color.RED)
         return False
 
-    color_print.write("")
+    console.write("")
     end_time = datetime.datetime.now()
     spend_time = get_spend_time(start_time, end_time)
-    color_print.write(f"걸린 시간: {spend_time}", Color.YELLOW)
+    console.write(f"걸린 시간: {spend_time}", Color.YELLOW)
     return True
 
 def _check_edk2_exists(config: datatype.Config):
-    color_print.write("\r미설치 여부 검사 -> ...", Color.YELLOW, end="")
+    console.write("\r미설치 여부 검사 -> ...", Color.YELLOW, end="")
     if os.path.exists(config["edk2_path"]):
         raise Edk2Except.Edk2ExistsError(
             "\r설치 여부 검사 -> 실패\n" \
             "이미 edk2 폴더가 존재하므로 더 이상 진행할 수 없습니다."
             )
-    color_print.write("\r미설치 여부 검사 -> 통과", Color.GREEN)
+    console.write("\r미설치 여부 검사 -> 통과", Color.GREEN)
 
 def _check_is_docker():
-    color_print.write("docker 컨테이너 여부 검사..", Color.BLUE)
+    console.write("docker 컨테이너 여부 검사..", Color.BLUE)
 
     if os.path.exists('/.dockerenv'):
         return
@@ -89,15 +89,15 @@ def _check_is_docker():
     raise Edk2Except.NotDockerError
 
 def _check_conf(config: datatype.Config):
-    color_print.write("\r설정 파일 내용 검사 -> ...", Color.YELLOW, end="")
+    console.write("\r설정 파일 내용 검사 -> ...", Color.YELLOW, end="")
     try:
         check.edk2_config(config)
     except SettingError.InvalidSettingError as error:
         raise SettingError.InvalidSettingError(error) from error
-    color_print.write("\r설정 파일 내용 검사 -> 통과", Color.GREEN)
+    console.write("\r설정 파일 내용 검사 -> 통과", Color.GREEN)
 
 def _handling_docker_error():
-    _input = color_print.read(
+    _input = console.read(
     "현재 프로그램이 실행중인 곳이 " \
     "docker 컨테이너 내부가 아닌 것 같습니다.\n" \
     "전역에 설치를 할 경우 패키지 꼬임, " \
@@ -105,16 +105,16 @@ def _handling_docker_error():
     "그래도 괜찮으시다면 y를 입력해주세요.\n"
     "여기에 입력 > ", Color.RED)
     if _input != "y":
-        color_print.write("취소합니다.", Color.YELLOW)
+        console.write("취소합니다.", Color.YELLOW)
         raise RunExcept.CancelError
 
 def _get_sudo():
-    color_print.write("시작하기에 앞서, sudo 인증이 필요합니다.", Color.YELLOW)
+    console.write("시작하기에 앞서, sudo 인증이 필요합니다.", Color.YELLOW)
     try:
         execute.require_sudo()
     except RunExcept.SudoError as error:
         raise RunExcept.SudoError(error) from error
-    color_print.write("sudo 인증 성공", Color.GREEN)
+    console.write("sudo 인증 성공", Color.GREEN)
 
 def _get_shell_task_lists(distro: str) -> list[datatype.ShellTask]:
     if distro == "RHEL":

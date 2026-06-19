@@ -1,4 +1,4 @@
-from utils import datatype
+from modules import datatype
 
 package_install: datatype.ShellTask = {
     "Message": "Qemu용 패키지 설치",

@@ -1,4 +1,4 @@
-from utils import datatype
+from modules import datatype
 
 package_upgrade: datatype.ShellTask = {
     "Message": "로컬 패키지 업데이트",

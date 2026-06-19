@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from utils import datatype
+from modules import datatype
 
 
 def make_qemu_dir(context: datatype.Contexts):

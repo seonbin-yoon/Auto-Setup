@@ -1,4 +1,4 @@
-from utils import datatype
+from modules import datatype
 
 EDK_BASIC_CHECKS = [
         {
