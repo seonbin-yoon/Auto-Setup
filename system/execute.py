@@ -57,7 +57,7 @@ def func_run(
             f"{func_task['Message']} -> 완료.{"":<5}",
             Color.GREEN)
 
-def env_var_substitution(
+def replace_task_values(
         raw_tasks: list[datatype.ShellTask],
         need_sudo: bool,
         program_context: datatype.Contexts) -> None:
