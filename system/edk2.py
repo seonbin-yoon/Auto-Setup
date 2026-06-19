@@ -43,7 +43,7 @@ def install(program_context: datatype.Contexts) -> bool:
     func_tasks = _get_func_task_lists()
     shell_tasks = _get_shell_task_lists(program_context.distro)
 
-    execute.env_var_substitution(shell_tasks, need_sudo, program_context)
+    execute.replace_task_values(shell_tasks, need_sudo, program_context)
 
     task_contexts = datatype.TaskContexts(
         func_task_num=len(func_tasks),

@@ -33,7 +33,7 @@ def install(program_context: datatype.Contexts) -> bool:
     shell_tasks = _get_shell_tasks(program_context)
     func_tasks = all_func.install_tasks
 
-    execute.env_var_substitution(shell_tasks, need_sudo, program_context)
+    execute.replace_task_values(shell_tasks, need_sudo, program_context)
 
     task_contexts = datatype.TaskContexts(
         shell_task_num=len(shell_tasks),
