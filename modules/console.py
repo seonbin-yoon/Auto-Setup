@@ -14,19 +14,6 @@ class Color:
     WHITE = "\033[37m"
     RESET = "\033[0m"
 
-
-# 현재는 안 사용됌
-# BACKGROUND_COLOR = {
-#    "BLACK": "\033[40m",
-#    "RED": "\033[41m",
-#    "GREEN": "\033[42m",
-#    "YELLOW": "\033[43m",
-#    "BLUE": "\033[44m",
-#    "MAGENTA": "\033[45m",
-#    "CYAN": "\033[46m",
-#    "WHITE": "\033[47m",
-# }
-
 class Config:
     def __init__(self):
         self.color_mode: bool = True
@@ -36,9 +23,9 @@ class Config:
 
 def clear_screen():
     if platform.system() == "Windows":
-        write("\033[2J\033[3J\033[H")
+        write("\033[2J\033[3J\033[H", end="")
     elif platform.system() == "Linux":
-        write("\033[2J\033[3J\033[H")
+        write("\033[2J\033[3J\033[H", end="")
     else:
         raise NotImplementedError("화면 초기화를 진행하지 못했습니다.")
 
